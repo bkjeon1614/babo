@@ -626,6 +626,40 @@
   .caught[hidden], .nunchi-overlay[hidden] { display: none; }
   .caught .face { width: 52%; aspect-ratio: 1; box-shadow: 0 0 0 5px #fff; animation: pop .35s ease-out; }
   .caught strong { font: 400 clamp(30px, 8vw, 48px) 'Black Han Sans', sans-serif; color: #fff; }
+  /* 걸렸을 때 화면 전체로 튀어나오는 피눈물 현우 */
+  .scare {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #000;
+    animation: scare-flash .25s ease-out;
+    transition: opacity .4s;
+  }
+  .scare.fade { opacity: 0; pointer-events: none; }
+  .scare img {
+    width: min(92vw, 92vh);
+    aspect-ratio: 1;
+    object-fit: cover;
+    -webkit-mask-image: radial-gradient(closest-side, #000 75%, transparent);
+    mask-image: radial-gradient(closest-side, #000 75%, transparent);
+    animation: scare-zoom .18s cubic-bezier(.2, 1.6, .4, 1), scare-shake .09s linear .18s 8;
+  }
+  .scare strong {
+    font: 400 clamp(28px, 8vw, 56px) 'Black Han Sans', sans-serif;
+    color: #c8102e;
+    text-shadow: 0 0 12px #000;
+  }
+  @keyframes scare-flash { from { background: #c8102e; } }
+  @keyframes scare-zoom { from { transform: scale(.2); } }
+  @keyframes scare-shake {
+    25% { transform: translate(-6px, 4px) rotate(-1deg); }
+    75% { transform: translate(6px, -4px) rotate(1deg); }
+  }
   .nunchi-overlay {
     position: absolute;
     inset: 0;
@@ -672,7 +706,7 @@
   .eat-btn.held { background: var(--ink); color: #ffd23f; }
   .eat-btn:disabled { opacity: .5; cursor: default; }
   @media (prefers-reduced-motion: reduce) {
-    .scene.stir > img, .chew.on, .caught .face { animation: none; }
+    .scene.stir > img, .chew.on, .caught .face, .scare, .scare img { animation: none; }
   }
   /* 탭이 5개라 아주 좁은 화면에서는 글씨를 줄여 한 줄에 맞춘다 */
   @media (max-width: 420px) {
@@ -1670,6 +1704,21 @@
     const noiseBar = document.getElementById('noise-bar');
 
     const BEST_KEY = 'babo-nunchi-best';
+    // 놀래키는 순간 바로 뜨도록 미리 받아 둔다
+    new Image().src = 'images/scare.jpg';
+
+    function scare() {
+      const el = document.createElement('div');
+      el.className = 'scare';
+      el.innerHTML = '<img src="images/scare.jpg" alt=""><strong>왜… 내 과자 먹었어…</strong>';
+      document.body.appendChild(el);
+      const close = () => {
+        el.classList.add('fade');
+        setTimeout(() => el.remove(), 400);
+      };
+      el.addEventListener('pointerdown', close);
+      setTimeout(close, 1800);
+    }
     const GRACE = 0.18;  // 눈 뜬 직후 손 뗄 여유(초)
     const rand = (a, b) => a + Math.random() * (b - a);
 
@@ -1724,6 +1773,7 @@
       scene.classList.remove('stir');
       caughtEl.hidden = false;
       bubble.textContent = '!!!';
+      scare();
       const score = Math.floor(snacks);
       const record = score > best;
       if (record) {
@@ -1741,7 +1791,7 @@
         msgEl.textContent = reason + ' · ' + msg;
         startBtn.textContent = '다시 하기';
         overlay.hidden = false;
-      }, 1200);
+      }, 2200);
     }
 
     function render() {
