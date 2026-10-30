@@ -543,6 +543,143 @@
   @media (prefers-reduced-motion: reduce) {
     .mole-board.shake, .hammer { animation: none; }
   }
+  /* 눈치 */
+  .nunchi-hud { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+  .nunchi-hud div {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 6px 14px;
+    font-size: 14px;
+    min-width: 96px;
+  }
+  .nunchi-hud b { display: block; font: 900 22px monospace; color: #ffd23f; }
+  .scene {
+    position: relative;
+    border: 4px solid var(--ink);
+    aspect-ratio: 4 / 3;
+    max-height: 460px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #2b2622;
+  }
+  .scene > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% 38%;
+    display: block;
+    transition: filter .2s;
+  }
+  .scene.stir > img { animation: stir .25s linear infinite; }
+  .scene.check > img { filter: brightness(1.1) saturate(1.3); }
+  .scene.check::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 0 8px var(--red), inset 0 0 80px rgba(200, 16, 46, .55);
+    pointer-events: none;
+  }
+  @keyframes stir {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    25% { transform: translateX(-4px) rotate(-.6deg); }
+    75% { transform: translateX(4px) rotate(.6deg); }
+  }
+  .bubble {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 6px 14px;
+    font: 900 18px 'Noto Sans KR', sans-serif;
+  }
+  .scene.check .bubble { background: var(--red); color: #fff; }
+  .bowl {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    font-size: clamp(40px, 10vw, 64px);
+    line-height: 1;
+  }
+  .chew {
+    position: absolute;
+    right: 18px;
+    bottom: clamp(56px, 13vw, 84px);
+    font: 900 20px 'Black Han Sans', sans-serif;
+    color: #ffd23f;
+    -webkit-text-stroke: 1px var(--ink);
+    opacity: 0;
+  }
+  .chew.on { opacity: 1; animation: chew .3s steps(2) infinite; }
+  @keyframes chew { 50% { transform: translateY(-4px) rotate(-6deg); } }
+  .caught {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(200, 16, 46, .82);
+  }
+  .caught[hidden], .nunchi-overlay[hidden] { display: none; }
+  .caught .face { width: 52%; aspect-ratio: 1; box-shadow: 0 0 0 5px #fff; animation: pop .35s ease-out; }
+  .caught strong { font: 400 clamp(30px, 8vw, 48px) 'Black Han Sans', sans-serif; color: #fff; }
+  .nunchi-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: rgba(20, 18, 16, .75);
+    color: var(--paper);
+  }
+  .nunchi-overlay strong { font: 400 clamp(26px, 7vw, 42px) 'Black Han Sans', sans-serif; color: #ffd23f; }
+  .nunchi-overlay p { margin: 0; font-size: 14px; line-height: 1.6; }
+  .nunchi-overlay button {
+    font: 900 18px 'Noto Sans KR', sans-serif;
+    padding: 10px 26px;
+    border: 3px solid var(--paper);
+    background: var(--red);
+    color: #fff;
+    cursor: pointer;
+  }
+  .noise { margin: 12px auto 0; max-width: 460px; font-size: 13px; text-align: left; }
+  .noise div { height: 14px; border: 3px solid var(--ink); background: #fff; margin-top: 4px; }
+  .noise i { display: block; height: 100%; width: 0; background: #3ddc84; }
+  .noise i.warn { background: #ffb020; }
+  .noise i.danger { background: var(--red); }
+  .eat-btn {
+    display: block;
+    width: 100%;
+    max-width: 460px;
+    margin: 14px auto 0;
+    padding: 18px 0;
+    font: 900 22px 'Noto Sans KR', sans-serif;
+    border: 4px solid var(--ink);
+    background: #ffd23f;
+    color: var(--ink);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+  }
+  .eat-btn.held { background: var(--ink); color: #ffd23f; }
+  .eat-btn:disabled { opacity: .5; cursor: default; }
+  @media (prefers-reduced-motion: reduce) {
+    .scene.stir > img, .chew.on, .caught .face { animation: none; }
+  }
+  /* 탭이 5개라 아주 좁은 화면에서는 글씨를 줄여 한 줄에 맞춘다 */
+  @media (max-width: 420px) {
+    .tab-bar { gap: 3px; }
+    .tab-bar button { font-size: 12px; letter-spacing: -.5px; white-space: nowrap; padding: 9px 0; }
+  }
+
   @media (max-width: 560px) {
     .tab-bar { gap: 4px; }
     .tab-bar button { font-size: 14px; padding: 10px 0; border-width: 3px; }
@@ -564,7 +701,7 @@
   @media print {
     body { background: #fff; padding: 0; }
     .flyer { box-shadow: none; max-width: none; }
-    .tab-bar, #panel-game, #panel-fight, #panel-mole { display: none; }
+    .tab-bar, #panel-game, #panel-fight, #panel-mole, #panel-nunchi { display: none; }
   }
 </style>
 </head>
@@ -574,6 +711,7 @@
     <button role="tab" id="tab-game" aria-controls="panel-game" aria-selected="false">💣 지뢰찾기</button>
     <button role="tab" id="tab-fight" aria-controls="panel-fight" aria-selected="false">🥊 격투</button>
     <button role="tab" id="tab-mole" aria-controls="panel-mole" aria-selected="false">🔨 두더지</button>
+    <button role="tab" id="tab-nunchi" aria-controls="panel-nunchi" aria-selected="false">🍪 눈치</button>
   </nav>
 
   <section role="tabpanel" id="panel-flyer" aria-labelledby="tab-flyer">
@@ -713,6 +851,38 @@
     </div>
   </section>
 
+  <section role="tabpanel" id="panel-nunchi" aria-labelledby="tab-nunchi" hidden>
+    <div class="game">
+      <h2>현우 깨우지 않기</h2>
+      <p class="desc">현우 옆에서 몰래 과자를 먹으세요. 뒤척이면 바로 멈추고, 눈 뜰 때 먹고 있으면 끝!</p>
+
+      <div class="nunchi-hud">
+        <div>먹은 과자<b id="nunchi-score">0</b></div>
+        <div>최고<b id="nunchi-best">0</b></div>
+      </div>
+
+      <div class="scene" id="scene">
+        <img src="images/hyunwoo3.jpg" alt="자고 있는 정현우">
+        <div class="bubble" id="bubble">쿨쿨... Zzz</div>
+        <div class="chew" id="chew">바삭바삭</div>
+        <div class="bowl">🍿</div>
+        <div class="caught" id="caught" hidden>
+          <span class="face"></span>
+          <strong>안 잤는데?!</strong>
+        </div>
+        <div class="nunchi-overlay" id="nunchi-overlay">
+          <strong id="nunchi-title">현우 깨우지 않기</strong>
+          <p id="nunchi-msg">버튼을 누르고 있는 동안 과자를 먹습니다<br>"음…" 하고 뒤척이면 손을 떼세요</p>
+          <button id="nunchi-start">시작</button>
+        </div>
+      </div>
+
+      <div class="noise">소음<div><i id="noise-bar"></i></div></div>
+      <button class="eat-btn" id="eat-btn" disabled>🍪 꾹 눌러서 먹기</button>
+      <div class="keys">PC는 <kbd>Space</kbd>를 누르고 있어도 됩니다 · 오래 먹으면 소음이 차서 들킵니다</div>
+    </div>
+  </section>
+
 <script>
   // 탭 전환
   const tabs = document.querySelectorAll('[role="tab"]');
@@ -722,7 +892,7 @@
       t.setAttribute('aria-selected', on);
       document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
     });
-    const hash = { 'tab-game': '#game', 'tab-fight': '#fight', 'tab-mole': '#mole' }[tab.id];
+    const hash = { 'tab-game': '#game', 'tab-fight': '#fight', 'tab-mole': '#mole', 'tab-nunchi': '#nunchi' }[tab.id];
     history.replaceState(null, '', hash || location.pathname);
     // 숨겨진 상태에서는 판 폭을 잴 수 없으므로, 탭이 보일 때 판을 다시 그린다
     if (tab.id === 'tab-game' && !started) newGame();
@@ -946,7 +1116,7 @@
   resetBtn.addEventListener('click', newGame);
 
   newGame();
-  const startTab = { '#game': 'tab-game', '#fight': 'tab-fight', '#mole': 'tab-mole' }[location.hash];
+  const startTab = { '#game': 'tab-game', '#fight': 'tab-fight', '#mole': 'tab-mole', '#nunchi': 'tab-nunchi' }[location.hash];
   if (startTab) selectTab(document.getElementById(startTab));
 </script>
 <script>
@@ -1480,6 +1650,154 @@
     });
 
     requestAnimationFrame(t => { last = t; loop(t); });
+  })();
+</script>
+<script>
+  // 눈치게임: 현우가 자는 동안만 과자를 먹는다
+  (() => {
+    const panel = document.getElementById('panel-nunchi');
+    const scene = document.getElementById('scene');
+    const bubble = document.getElementById('bubble');
+    const chew = document.getElementById('chew');
+    const caughtEl = document.getElementById('caught');
+    const overlay = document.getElementById('nunchi-overlay');
+    const titleEl = document.getElementById('nunchi-title');
+    const msgEl = document.getElementById('nunchi-msg');
+    const startBtn = document.getElementById('nunchi-start');
+    const eatBtn = document.getElementById('eat-btn');
+    const scoreEl = document.getElementById('nunchi-score');
+    const bestEl = document.getElementById('nunchi-best');
+    const noiseBar = document.getElementById('noise-bar');
+
+    const BEST_KEY = 'babo-nunchi-best';
+    const GRACE = 0.18;  // 눈 뜬 직후 손 뗄 여유(초)
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    let best = 0;
+    try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
+    bestEl.textContent = best;
+
+    let running = false, holding = false, snacks = 0, noise = 0, elapsed = 0;
+    let state = 'sleep', stateLeft = 0, checkTime = 0, fake = false, last = 0;
+
+    // 시간이 갈수록 잠이 얕아진다
+    const level = () => Math.min(1, elapsed / 60);
+
+    function setState(next) {
+      state = next;
+      scene.classList.toggle('stir', next === 'stir');
+      scene.classList.toggle('check', next === 'check');
+      if (next === 'sleep') {
+        stateLeft = rand(1.6, 4.2) * (1 - level() * 0.5);
+        bubble.textContent = '쿨쿨... Zzz';
+      } else if (next === 'stir') {
+        stateLeft = rand(0.4, 0.9) * (1 - level() * 0.45);
+        fake = Math.random() < 0.25;
+        bubble.textContent = '음…';
+      } else {
+        stateLeft = rand(1, 1.5);
+        checkTime = 0;
+        bubble.textContent = '👀 …뭐야?';
+      }
+    }
+
+    function setHold(on) {
+      holding = on && running;
+      eatBtn.classList.toggle('held', holding);
+      chew.classList.toggle('on', holding);
+    }
+
+    function start() {
+      snacks = noise = elapsed = 0;
+      running = true;
+      caughtEl.hidden = overlay.hidden = true;
+      eatBtn.disabled = false;
+      setHold(false);
+      setState('sleep');
+      render();
+    }
+
+    function caught(reason) {
+      running = false;
+      setHold(false);
+      eatBtn.disabled = true;
+      scene.classList.remove('stir');
+      caughtEl.hidden = false;
+      bubble.textContent = '!!!';
+      const score = Math.floor(snacks);
+      const record = score > best;
+      if (record) {
+        best = score;
+        try { localStorage.setItem(BEST_KEY, best); } catch (e) {}
+        bestEl.textContent = best;
+      }
+      let msg;
+      if (score >= 120) msg = '과자 도둑 장인. 현우는 아직도 모릅니다';
+      else if (score >= 60) msg = '눈치 상급. 현우 과자가 절반 사라졌습니다';
+      else if (score >= 20) msg = '나쁘지 않은 눈치';
+      else msg = '바로 들켰습니다. 현우가 과자를 숨겼습니다';
+      setTimeout(() => {
+        titleEl.textContent = (record ? '신기록! ' : '') + score + '개';
+        msgEl.textContent = reason + ' · ' + msg;
+        startBtn.textContent = '다시 하기';
+        overlay.hidden = false;
+      }, 1200);
+    }
+
+    function render() {
+      scoreEl.textContent = Math.floor(snacks);
+      noiseBar.style.width = (noise * 100) + '%';
+      noiseBar.className = noise > 0.8 ? 'danger' : noise > 0.5 ? 'warn' : '';
+    }
+
+    function tick(dt) {
+      elapsed += dt;
+      if (holding) {
+        snacks += dt * (5 + level() * 3);
+        noise += dt * (0.16 + level() * 0.12);
+      } else {
+        noise = Math.max(0, noise - dt * 0.3);
+      }
+      if (noise >= 1) { noise = 1; render(); return caught('너무 시끄러웠습니다'); }
+
+      stateLeft -= dt;
+      if (state === 'check') checkTime += dt;
+      if (state === 'check' && holding && checkTime > GRACE) {
+        render();
+        return caught('먹다가 딱 걸렸습니다');
+      }
+      if (stateLeft <= 0) {
+        if (state === 'sleep') setState('stir');
+        else if (state === 'stir') setState(fake ? 'sleep' : 'check');
+        else setState('sleep');
+      }
+      render();
+    }
+
+    function loop(t) {
+      requestAnimationFrame(loop);
+      const dt = Math.min(0.1, (t - last) / 1000);
+      last = t;
+      if (!running || panel.hidden || document.hidden) return;
+      tick(dt);
+    }
+
+    // 입력: 버튼 누르고 있기, Space 누르고 있기
+    eatBtn.addEventListener('pointerdown', e => { e.preventDefault(); eatBtn.setPointerCapture(e.pointerId); setHold(true); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => eatBtn.addEventListener(t, () => setHold(false)));
+    eatBtn.addEventListener('contextmenu', e => e.preventDefault());
+    window.addEventListener('keydown', e => {
+      if (panel.hidden || e.code !== 'Space') return;
+      e.preventDefault();
+      if (!e.repeat) setHold(true);
+    });
+    window.addEventListener('keyup', e => { if (e.code === 'Space') setHold(false); });
+    // 다른 탭으로 가면 손을 뗀 것으로 본다
+    document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener('click', () => setHold(false)));
+    window.addEventListener('blur', () => setHold(false));
+
+    startBtn.addEventListener('click', start);
+    requestAnimationFrame(t => { last = t; requestAnimationFrame(loop); });
   })();
 </script>
 </body>
