@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사람을 찾습니다</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fbf7ec;
+    --ink: #1a1a1a;
+    --red: #c8102e;
+    --muted: #555;
+    --line: #1a1a1a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #d9d4c7;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .flyer {
+    width: 100%;
+    max-width: 794px; /* A4 폭 */
+    background: var(--paper);
+    border: 10px solid var(--ink);
+    padding: 32px 36px 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    position: relative;
+  }
+  .badge {
+    position: absolute;
+    top: 24px; right: -14px;
+    background: var(--red);
+    color: #fff;
+    font-weight: 900;
+    padding: 8px 18px;
+    transform: rotate(8deg);
+    font-size: 18px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.3);
+  }
+  h1 {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(48px, 13vw, 104px);
+    line-height: 1;
+    margin: 0;
+    text-align: center;
+    color: var(--red);
+    letter-spacing: 4px;
+  }
+  .sub {
+    text-align: center;
+    font-weight: 900;
+    font-size: clamp(18px, 4vw, 26px);
+    margin: 10px 0 22px;
+    border-top: 3px solid var(--line);
+    border-bottom: 3px solid var(--line);
+    padding: 8px 0;
+  }
+  .photos {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr 1fr;
+    gap: 10px;
+  }
+  .photos figure { margin: 0; }
+  .photos img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border: 3px solid var(--ink);
+    display: block;
+    filter: contrast(1.05);
+  }
+  .photos img.main { object-position: top; }
+  .photos figcaption {
+    font-size: 13px;
+    text-align: center;
+    margin-top: 4px;
+    color: var(--muted);
+  }
+  .name {
+    text-align: center;
+    margin: 22px 0 6px;
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(36px, 9vw, 64px);
+  }
+  .name small {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 18px;
+    font-size: 16px;
+  }
+  th, td {
+    border: 2px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    width: 26%;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .note {
+    border: 3px dashed var(--red);
+    padding: 14px 16px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .note strong { color: var(--red); }
+  .reward {
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(24px, 6vw, 38px);
+  }
+  .reward span { color: var(--red); }
+  .contact {
+    text-align: center;
+    font-weight: 700;
+    margin-top: 6px;
+    font-size: 17px;
+  }
+  .tabs {
+    display: flex;
+    margin: 22px -36px -28px;
+    border-top: 2px dashed var(--ink);
+  }
+  .tabs div {
+    flex: 1;
+    writing-mode: vertical-rl;
+    font-size: 12px;
+    padding: 10px 0;
+    text-align: center;
+    border-right: 2px dashed var(--ink);
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tabs div:last-child { border-right: 0; }
+
+  @media (max-width: 560px) {
+    .flyer { padding: 22px 16px; border-width: 6px; }
+    .photos { grid-template-columns: 1fr 1fr; }
+    .photos figure:first-child { grid-column: span 2; }
+    .photos img.main { aspect-ratio: 4 / 5; }
+    .tabs { margin: 18px -16px -22px; }
+    .badge { right: -6px; font-size: 14px; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .flyer { box-shadow: none; max-width: none; }
+  }
+</style>
+</head>
+<body>
+  <article class="flyer">
+    <div class="badge">긴급!!</div>
+    <h1>사람을 찾습니다</h1>
+    <p class="sub">길바닥 아무 데서나 자는 노숙자(?)를 찾습니다</p>
+
+    <section class="photos">
+      <figure>
+        <img class="main" src="images/hyunwoo1.jpg" alt="정현우 평상시 모습">
+        <figcaption>▲ 평상시 (깨어 있을 때)</figcaption>
+      </figure>
+      <figure>
+        <img src="images/hyunwoo3.jpg" alt="정현우 취침 모습 1">
+        <figcaption>▲ 마지막 목격 (1)</figcaption>
+      </figure>
+      <figure>
+        <img src="images/hyunwoo2.jpg" alt="정현우 취침 모습 2">
+        <figcaption>▲ 마지막 목격 (2)</figcaption>
+      </figure>
+    </section>
+
+    <div class="name">정현우 <small>(자칭 직장인)</small></div>
+
+    <table>
+      <tr><th>인상착의</th><td>검은 뿔테 안경, 흰 티 또는 검은 티. 잘 때는 안경 벗음</td></tr>
+      <tr><th>주요 서식지</th><td>바닥, 이불 위, 담요 위 — 등만 대면 어디든</td></tr>
+      <tr><th>소지품</th><td>휴대폰 1대 (항상 머리맡에 켜진 채로 방치)</td></tr>
+      <tr><th>특이사항</th><td>눕는 순간 3초 안에 잠듦. 입 살짝 벌리고 잠. 깨어 있을 땐 손가락으로 사람 가리키는 버릇 있음</td></tr>
+      <tr><th>마지막 목격</th><td>회색 담요를 베개 삼아 숙면 중</td></tr>
+    </table>
+
+    <div class="note">
+      이 사람을 발견하시면 <strong>절대 깨우지 마시고</strong> 이불을 덮어 주신 뒤 조용히 연락 주세요.<br>
+      억지로 깨우면 <strong>"안 잤는데?"</strong>라고 주장할 수 있으니 주의 바랍니다.
+    </div>
+
+    <div class="reward">사례금: <span>삼각김밥 1개</span></div>
+    <div class="contact">※ 본 전단지는 장난입니다. 실제 신고는 하지 마세요 😴</div>
+
+    <div class="tabs">
+      <div>정현우 목격 제보</div>
+      <div>정현우 목격 제보</div>
+      <div>정현우 목격 제보</div>
+      <div>정현우 목격 제보</div>
+      <div>정현우 목격 제보</div>
+      <div>정현우 목격 제보</div>
+      <div>정현우 목격 제보</div>
+      <div>정현우 목격 제보</div>
+    </div>
+  </article>
+</body>
+</html>
