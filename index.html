@@ -127,6 +127,64 @@
   }
   .cell.open { background: #f3eee1; border: 1px solid #bfb8a8; cursor: default; }
   .cell.boom { background: var(--red); }
+  /* 현우 얼굴: 사진에서 얼굴 부분만 동그랗게 잘라 쓴다 */
+  .face {
+    display: block;
+    border-radius: 50%;
+    background: url(images/hyunwoo1.jpg) 5.8% 7.2% / 222.4% auto no-repeat;
+  }
+  .face.f2 { background-image: url(images/hyunwoo3.jpg); background-position: 53.8% 35.3%; background-size: 192.9% auto; }
+  .face.f3 { background-image: url(images/hyunwoo2.jpg); background-position: 68.2% 29.7%; background-size: 168.75% auto; }
+  .cell .face { width: 82%; height: 82%; box-shadow: 0 0 0 2px var(--ink); }
+  .cell.boom .face { box-shadow: 0 0 0 2px #fff; animation: pop .4s ease-out; }
+  .cell.found .face { box-shadow: 0 0 0 2px #1d7a2e; }
+
+  /* 지뢰가 터지면 화면에 현우 얼굴을 도배한다 */
+  .face-storm {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity .6s;
+  }
+  .face-storm.fade { opacity: 0; pointer-events: none; }
+  .face-storm .face {
+    position: absolute;
+    box-shadow: 0 6px 18px rgba(0,0,0,.4), 0 0 0 4px #fff;
+    animation: pop .45s cubic-bezier(.2, 1.6, .4, 1) backwards, wobble .5s ease-in-out .45s infinite alternate;
+  }
+  .face-storm strong {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-6deg);
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(36px, 10vw, 80px);
+    color: #fff;
+    background: var(--red);
+    padding: 6px 22px;
+    white-space: nowrap;
+    box-shadow: 0 6px 0 var(--ink);
+    animation: pop .4s cubic-bezier(.2, 1.6, .4, 1) .3s backwards;
+  }
+  @keyframes pop { from { transform: scale(0) rotate(var(--r, 0deg)); } }
+  @keyframes wobble {
+    from { transform: rotate(calc(var(--r, 0deg) - 8deg)) scale(1); }
+    to { transform: rotate(calc(var(--r, 0deg) + 8deg)) scale(1.08); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-10px, 6px); }
+    40% { transform: translate(9px, -8px); }
+    60% { transform: translate(-7px, -4px); }
+    80% { transform: translate(6px, 7px); }
+  }
+  .shake { animation: shake .4s linear 2; }
+  @media (prefers-reduced-motion: reduce) {
+    .face-storm .face, .face-storm strong, .cell.boom .face { animation: none; }
+    .shake { animation: none; }
+  }
   .cell.n1 { color: #1f4fd1; } .cell.n2 { color: #1d7a2e; } .cell.n3 { color: #c8102e; }
   .cell.n4 { color: #1b1f6b; } .cell.n5 { color: #7a1d1d; } .cell.n6 { color: #117a7a; }
   .cell.n7 { color: #1a1a1a; } .cell.n8 { color: #777; }
@@ -262,6 +320,238 @@
   }
   .tabs div:last-child { border-right: 0; }
 
+  /* 격투 */
+  .fight-stage {
+    position: relative;
+    border: 4px solid var(--ink);
+    background: #2b2622;
+  }
+  .fight-stage canvas { display: block; width: 100%; height: auto; }
+  .fight-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(20, 18, 16, .72);
+    color: var(--paper);
+    padding: 16px;
+  }
+  .fight-overlay[hidden] { display: none; }
+  .fight-overlay strong {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(28px, 7vw, 48px);
+    color: #ffd23f;
+  }
+  .fight-overlay p { margin: 0; font-size: 15px; }
+  .fight-overlay button {
+    font: 900 18px 'Noto Sans KR', sans-serif;
+    padding: 10px 26px;
+    border: 3px solid var(--paper);
+    background: var(--red);
+    color: #fff;
+    cursor: pointer;
+  }
+  .pad {
+    display: none;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .pad div { display: flex; gap: 6px; }
+  .pad button {
+    width: clamp(40px, 11.5vw, 52px);
+    height: clamp(40px, 11.5vw, 52px);
+    font: 900 15px 'Noto Sans KR', sans-serif;
+    border: 3px solid var(--ink);
+    background: var(--paper);
+    border-radius: 50%;
+    padding: 0;
+    touch-action: none;
+  }
+  .pad button.held { background: var(--ink); color: var(--paper); }
+  @media (hover: none) and (pointer: coarse) {
+    .pad { display: flex; }
+    .keys { display: none; }
+  }
+  .keys {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .keys kbd {
+    display: inline-block;
+    border: 2px solid var(--ink);
+    border-bottom-width: 3px;
+    padding: 0 6px;
+    font: 700 12px monospace;
+    background: #fff;
+  }
+
+  /* 두더지 */
+  .mole-hud {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .mole-hud div {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 6px 12px;
+    font: 900 16px 'Noto Sans KR', sans-serif;
+    min-width: 76px;
+  }
+  .mole-hud b { color: #ffd23f; font-family: monospace; font-size: 20px; margin-left: 4px; }
+  .mole-board {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 14px;
+    background: #d8d0bd;
+    border: 4px solid var(--ink);
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ctext y='32' font-size='32'%3E%F0%9F%94%A8%3C/text%3E%3C/svg%3E") 8 8, pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .hole { position: relative; aspect-ratio: 1; }
+  .hole::before {
+    content: '';
+    position: absolute;
+    left: 4%; right: 4%; bottom: 2%;
+    height: 26%;
+    background: #2b2622;
+    border-radius: 50%;
+  }
+  /* 구멍 가운데 선 아래는 잘라서 땅속에서 올라오는 것처럼 보이게 한다 */
+  .mole-clip {
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    bottom: 15%;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .mole {
+    position: absolute;
+    left: 12%; width: 76%;
+    bottom: 0;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 4px solid var(--ink);
+    background-color: var(--paper);
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(34px, 11vw, 56px);
+    transform: translateY(110%);
+    transition: transform .12s ease-out;
+    z-index: 1;
+  }
+  .hole.up .mole { transform: translateY(0); }
+  .hole.hit .mole { transform: translateY(25%) scale(.95, .8); filter: brightness(1.4); transition-duration: .06s; }
+  .mole.sleep1 { background-image: url(images/hyunwoo2.jpg); background-size: 142.1%; background-position: 62.5% 28.4%; }
+  .mole.sleep2 { background-image: url(images/hyunwoo3.jpg); background-size: 158.8%; background-position: 57.5% 37.9%; }
+  .mole.awake  { background-image: url(images/hyunwoo1.jpg); background-size: 179.6%; background-position: 0% 7%; border-color: #ffd23f; }
+  .mole.boss   { background-color: #444; border-color: var(--red); }
+  .mole.alarm  { background-color: #fff3c4; }
+  .mole-tag {
+    position: absolute;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    font: 900 11px 'Noto Sans KR', sans-serif;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1px 6px;
+    white-space: nowrap;
+    z-index: 2;
+    opacity: 0;
+  }
+  .hole.up .mole-tag { opacity: 1; }
+  .mole-tag:empty { display: none; }
+  .pop {
+    position: absolute;
+    pointer-events: none;
+    font: 900 20px 'Black Han Sans', sans-serif;
+    color: var(--red);
+    text-shadow: 2px 2px 0 var(--paper);
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    animation: pop-up .7s ease-out forwards;
+    z-index: 5;
+  }
+  .pop.good { color: #1d7a2e; }
+  .pop.gold { color: #b8860b; font-size: 24px; }
+  .hammer {
+    position: absolute;
+    pointer-events: none;
+    font-size: 40px;
+    transform-origin: 80% 80%;
+    animation: hammer .22s ease-in forwards;
+    z-index: 6;
+  }
+  @keyframes pop-up {
+    to { transform: translate(-50%, -160%); opacity: 0; }
+  }
+  @keyframes hammer {
+    0% { transform: translate(-30%, -90%) rotate(-50deg); }
+    60% { transform: translate(-30%, -90%) rotate(20deg); }
+    100% { transform: translate(-30%, -90%) rotate(10deg); opacity: 0; }
+  }
+  .mole-board.shake { animation: board-shake .3s; }
+  @keyframes board-shake {
+    25% { transform: translateX(-6px); } 75% { transform: translateX(6px); }
+  }
+  .mole-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(20, 18, 16, .78);
+    color: var(--paper);
+    text-align: center;
+    padding: 12px;
+    z-index: 10;
+    cursor: default;
+  }
+  .mole-overlay[hidden] { display: none; }
+  .mole-overlay strong { font-family: 'Black Han Sans', sans-serif; font-size: clamp(26px, 7vw, 40px); color: #ffd23f; }
+  .mole-overlay p { margin: 0; font-size: 14px; line-height: 1.6; }
+  .mole-overlay button {
+    font: 900 18px 'Noto Sans KR', sans-serif;
+    padding: 10px 26px;
+    border: 3px solid var(--paper);
+    background: var(--red);
+    color: #fff;
+    cursor: pointer;
+  }
+  .mole-legend { margin-top: 12px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+  @media (prefers-reduced-motion: reduce) {
+    .mole-board.shake, .hammer { animation: none; }
+  }
+  @media (max-width: 560px) {
+    .tab-bar { gap: 4px; }
+    .tab-bar button { font-size: 14px; padding: 10px 0; border-width: 3px; }
+    .mole-board { gap: 6px; padding: 8px; }
+    .mole-hud { gap: 4px; }
+    .mole-hud div { min-width: 0; padding: 5px 8px; font-size: 13px; }
+    .mole-hud b { font-size: 16px; }
+  }
+
   @media (max-width: 560px) {
     .flyer { padding: 22px 16px; border-width: 6px; }
     .photos { grid-template-columns: 1fr 1fr; }
@@ -274,7 +564,7 @@
   @media print {
     body { background: #fff; padding: 0; }
     .flyer { box-shadow: none; max-width: none; }
-    .tab-bar, #panel-game { display: none; }
+    .tab-bar, #panel-game, #panel-fight, #panel-mole { display: none; }
   }
 </style>
 </head>
@@ -282,6 +572,8 @@
   <nav class="tab-bar" role="tablist">
     <button role="tab" id="tab-flyer" aria-controls="panel-flyer" aria-selected="true">📄 전단지</button>
     <button role="tab" id="tab-game" aria-controls="panel-game" aria-selected="false">💣 지뢰찾기</button>
+    <button role="tab" id="tab-fight" aria-controls="panel-fight" aria-selected="false">🥊 격투</button>
+    <button role="tab" id="tab-mole" aria-controls="panel-mole" aria-selected="false">🔨 두더지</button>
   </nav>
 
   <section role="tabpanel" id="panel-flyer" aria-labelledby="tab-flyer">
@@ -360,6 +652,67 @@
     </div>
   </section>
 
+  <section role="tabpanel" id="panel-fight" aria-labelledby="tab-fight" hidden>
+    <div class="game">
+      <h2>현우를 깨워라</h2>
+      <p class="desc">자꾸 조는 현우를 때려서 깨우세요. 현우가 졸 때(Zzz) 때리면 데미지 2배!</p>
+
+      <div class="fight-stage">
+        <canvas id="fight" width="760" height="400"></canvas>
+        <div class="fight-overlay" id="fight-overlay">
+          <strong id="fight-title">ROUND 1</strong>
+          <p id="fight-msg">60초 안에 현우의 체력을 0으로 만드세요</p>
+          <button id="fight-start">시작</button>
+        </div>
+      </div>
+
+      <div class="pad" id="pad">
+        <div>
+          <button data-key="left">◀</button>
+          <button data-key="up">▲</button>
+          <button data-key="right">▶</button>
+        </div>
+        <div>
+          <button data-key="guard">막기</button>
+          <button data-key="punch">펀치</button>
+          <button data-key="kick">킥</button>
+        </div>
+      </div>
+
+      <div class="keys">
+        이동 <kbd>A</kbd><kbd>D</kbd> / <kbd>←</kbd><kbd>→</kbd> · 점프 <kbd>W</kbd> / <kbd>↑</kbd> ·
+        펀치 <kbd>J</kbd> · 킥 <kbd>K</kbd> · 막기 <kbd>L</kbd>
+      </div>
+    </div>
+  </section>
+
+  <section role="tabpanel" id="panel-mole" aria-labelledby="tab-mole" hidden>
+    <div class="game">
+      <h2>현우 두더지잡기</h2>
+      <p class="desc">30초 동안 자고 있는 현우를 최대한 많이 깨우세요. 팀장님은 때리면 안 됩니다!</p>
+
+      <div class="mole-hud">
+        <div>점수<b id="mole-score">0</b></div>
+        <div>시간<b id="mole-time">30</b></div>
+        <div>콤보<b id="mole-combo">x1</b></div>
+        <div>최고<b id="mole-best">0</b></div>
+      </div>
+
+      <div class="mole-board" id="mole-board">
+        <div class="mole-overlay" id="mole-overlay">
+          <strong id="mole-title">현우 두더지잡기</strong>
+          <p id="mole-msg">구멍에서 올라오는 현우를 망치로 때려 깨우세요</p>
+          <button id="mole-start">시작</button>
+        </div>
+      </div>
+
+      <div class="mole-legend">
+        😴 자는 현우 +10 · 🤓 깨어 있는 현우 +25 (금방 숨음) · ⏰ 알람 +3초 · 👔 팀장님 −30, 콤보 끊김<br>
+        연속으로 맞히면 5콤보마다 배율 +1 (최대 x5) · 빈 구멍을 치면 콤보가 끊깁니다
+      </div>
+    </div>
+  </section>
+
 <script>
   // 탭 전환
   const tabs = document.querySelectorAll('[role="tab"]');
@@ -369,7 +722,8 @@
       t.setAttribute('aria-selected', on);
       document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
     });
-    history.replaceState(null, '', tab.id === 'tab-game' ? '#game' : location.pathname);
+    const hash = { 'tab-game': '#game', 'tab-fight': '#fight', 'tab-mole': '#mole' }[tab.id];
+    history.replaceState(null, '', hash || location.pathname);
     // 숨겨진 상태에서는 판 폭을 잴 수 없으므로, 탭이 보일 때 판을 다시 그린다
     if (tab.id === 'tab-game' && !started) newGame();
   }
@@ -381,7 +735,12 @@
     normal: { rows: 16, cols: 16, mines: 40 },
     hard:   { rows: 16, cols: 30, mines: 99 },
   };
-  const MINE = '😴', FLAG = '🚩';
+  const FLAG = '🚩';
+  const faceEl = (variant = '') => {
+    const el = document.createElement('span');
+    el.className = 'face' + (variant ? ' ' + variant : '');
+    return el;
+  };
   const boardEl = document.getElementById('board');
   const minesLeftEl = document.getElementById('mines-left');
   const timerEl = document.getElementById('timer');
@@ -493,18 +852,53 @@
     clearInterval(timerId);
     resetBtn.textContent = '😵';
     cells.forEach((c, i) => {
-      if (c.mine && !c.flag) { c.el.textContent = MINE; c.el.classList.add('open'); }
+      if (c.mine && !c.flag) { c.el.replaceChildren(faceEl()); c.el.classList.add('open'); }
       if (!c.mine && c.flag) c.el.textContent = '❌';
     });
     cells[hit].el.classList.add('boom');
     resultEl.textContent = '현우를 밟았습니다! "안 잤는데?" 😠';
+    faceStorm();
+  }
+
+  function faceStorm() {
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const storm = document.createElement('div');
+    storm.className = 'face-storm';
+    const vw = innerWidth, vh = innerHeight, n = calm ? 8 : (vw < 600 ? 28 : 45);
+    for (let k = 0; k < n; k++) {
+      const f = faceEl(['', 'f2', 'f3'][k % 3]);
+      const size = Math.round((0.12 + Math.random() * 0.22) * Math.min(vw, vh) + 30);
+      f.style.cssText = `width:${size}px;height:${size}px;left:${Math.random() * vw - size / 2}px;` +
+        `top:${Math.random() * vh - size / 2}px;--r:${Math.round(Math.random() * 60 - 30)}deg;` +
+        `animation-delay:${(k * 0.04).toFixed(2)}s, ${(0.45 + k * 0.04).toFixed(2)}s`;
+      storm.appendChild(f);
+    }
+    const msg = document.createElement('strong');
+    msg.textContent = '안 잤는데?!';
+    storm.appendChild(msg);
+    document.body.appendChild(storm);
+    if (!calm) {
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 800);
+    }
+    // 3초 뒤 또는 누르면 사라진다
+    const close = () => {
+      if (storm.classList.contains('fade')) return;
+      storm.classList.add('fade');
+      setTimeout(() => storm.remove(), 600);
+    };
+    storm.addEventListener('click', close);
+    setTimeout(close, 3000);
   }
 
   function win() {
     over = true;
     clearInterval(timerId);
     resetBtn.textContent = '😎';
-    cells.forEach(c => { if (c.mine && !c.flag) c.el.textContent = FLAG; });
+    // 찾아낸 현우들을 초록 테두리 얼굴로 보여 준다
+    cells.forEach(c => {
+      if (c.mine) { c.el.replaceChildren(faceEl()); c.el.classList.add('open', 'found'); }
+    });
     minesLeftEl.textContent = pad(0);
     resultEl.textContent = `현우를 한 번도 안 깨우고 성공! (${seconds}초) 사례금 삼각김밥 획득 🍙`;
   }
@@ -552,7 +946,541 @@
   resetBtn.addEventListener('click', newGame);
 
   newGame();
-  if (location.hash === '#game') selectTab(document.getElementById('tab-game'));
+  const startTab = { '#game': 'tab-game', '#fight': 'tab-fight', '#mole': 'tab-mole' }[location.hash];
+  if (startTab) selectTab(document.getElementById(startTab));
+</script>
+<script>
+  // 격투: 나 vs 현우(CPU)
+  (() => {
+    const canvas = document.getElementById('fight');
+    const ctx = canvas.getContext('2d');
+    const panel = document.getElementById('panel-fight');
+    const overlay = document.getElementById('fight-overlay');
+    const titleEl = document.getElementById('fight-title');
+    const msgEl = document.getElementById('fight-msg');
+    const startBtn = document.getElementById('fight-start');
+
+    const W = canvas.width, H = canvas.height, FLOOR = H - 60;
+    const GRAVITY = 0.9, SPEED = 4.2, JUMP = -15, ROUND_TIME = 60;
+    const MOVES = {
+      punch: { startup: 5, active: 4, recover: 8,  reach: 62, dmg: 6,  push: 5, y: -95 },
+      kick:  { startup: 9, active: 5, recover: 14, reach: 82, dmg: 10, push: 9, y: -55 },
+    };
+
+    // 현우 얼굴은 전단지 첫 사진에서 잘라 쓴다
+    const face = new Image();
+    face.src = 'images/hyunwoo1.jpg';
+    const FACE_CROP = { x: 20, y: 70, size: 200 };
+
+    function fighter(x, facing, color) {
+      return { x, y: FLOOR, vx: 0, vy: 0, facing, color, hp: 100, shownHp: 100,
+               state: 'idle', frame: 0, move: null, hit: false, guard: false,
+               hurt: 0, sleep: 0, walk: 0 };
+    }
+
+    let me, cpu, timeLeft, running = false, last = 0, acc = 0, rafId = null;
+    let effects = [], ai = { think: 0, plan: 'idle' };
+    const keys = { left: false, right: false, up: false, punch: false, kick: false, guard: false };
+    const KEYMAP = { a: 'left', arrowleft: 'left', d: 'right', arrowright: 'right',
+                     w: 'up', arrowup: 'up', j: 'punch', k: 'kick', l: 'guard' };
+
+    function reset() {
+      me = fighter(200, 1, '#1f4fd1');
+      cpu = fighter(W - 200, -1, '#c8102e');
+      timeLeft = ROUND_TIME;
+      effects = [];
+      ai = { think: 0, plan: 'idle' };
+    }
+
+    const onGround = f => f.y >= FLOOR;
+    const busy = f => f.move || f.hurt > 0 || f.sleep > 0;
+
+    function startMove(f, name) {
+      if (busy(f) || f.guard) return;
+      f.move = name;
+      f.frame = 0;
+      f.hit = false;
+    }
+
+    function control(f, input) {
+      f.guard = input.guard && onGround(f) && !busy(f);
+      if (!busy(f) && !f.guard) {
+        f.vx = (input.right - input.left) * SPEED;
+        if (input.up && onGround(f)) f.vy = JUMP;
+        if (input.punch) startMove(f, 'punch');
+        else if (input.kick) startMove(f, 'kick');
+      } else if (onGround(f)) {
+        f.vx *= 0.8;
+      }
+    }
+
+    function physics(f) {
+      f.vy += GRAVITY;
+      f.x += f.vx;
+      f.y += f.vy;
+      if (f.y >= FLOOR) { f.y = FLOOR; f.vy = 0; }
+      f.x = Math.max(40, Math.min(W - 40, f.x));
+      if (f.hurt > 0) f.hurt--;
+      if (f.sleep > 0) f.sleep--;
+      f.walk += Math.abs(f.vx) * 0.08;
+      f.shownHp += (f.hp - f.shownHp) * 0.15;
+    }
+
+    function attack(a, d) {
+      if (!a.move) return;
+      const m = MOVES[a.move];
+      a.frame++;
+      const activeFrom = m.startup, activeTo = m.startup + m.active;
+      if (!a.hit && a.frame > activeFrom && a.frame <= activeTo) {
+        const dx = (d.x - a.x) * a.facing;
+        const dy = Math.abs((d.y - 70) - (a.y + m.y));
+        if (dx > 0 && dx < m.reach && dy < 70) {
+          a.hit = true;
+          const blocked = d.guard && d.facing === -a.facing;
+          let dmg = blocked ? Math.ceil(m.dmg / 5) : m.dmg;
+          if (d.sleep > 0) { dmg *= 2; d.sleep = 0; }
+          d.hp = Math.max(0, d.hp - dmg);
+          d.vx = a.facing * m.push * (blocked ? 0.5 : 1);
+          if (!blocked) { d.hurt = 14; d.move = null; }
+          effects.push({ x: d.x - a.facing * 10, y: a.y + m.y, t: 14,
+                         text: blocked ? '막음' : (dmg >= 12 ? '퍽!!' : '퍽!'), big: dmg >= 12 });
+        }
+      }
+      if (a.frame >= activeTo + m.recover) a.move = null;
+    }
+
+    // 현우 AI: 다가가서 때리고, 가끔 막고, 가끔 존다
+    function think() {
+      const input = { left: false, right: false, up: false, punch: false, kick: false, guard: false };
+      if (cpu.sleep > 0 || cpu.hurt > 0) return input;
+      if (onGround(cpu) && !cpu.move && Math.random() < 0.004) {
+        cpu.sleep = 120;
+        effects.push({ x: cpu.x, y: cpu.y - 150, t: 40, text: '졸음...', big: false });
+        return input;
+      }
+      const dist = Math.abs(me.x - cpu.x);
+      if (--ai.think <= 0) {
+        ai.think = 10 + Math.random() * 20;
+        if (me.move && dist < 110 && Math.random() < 0.45) ai.plan = 'guard';
+        else if (dist > 90) ai.plan = Math.random() < 0.85 ? 'approach' : 'idle';
+        else ai.plan = Math.random() < 0.6 ? 'attack' : (Math.random() < 0.5 ? 'back' : 'idle');
+        if (Math.random() < 0.05) ai.plan = 'jump';
+      }
+      const toward = me.x > cpu.x ? 'right' : 'left';
+      const away = toward === 'right' ? 'left' : 'right';
+      if (ai.plan === 'approach') input[toward] = true;
+      if (ai.plan === 'back') input[away] = true;
+      if (ai.plan === 'guard') input.guard = true;
+      if (ai.plan === 'jump') { input.up = true; input[toward] = true; }
+      if (ai.plan === 'attack') {
+        input[Math.random() < 0.6 ? 'punch' : 'kick'] = true;
+        ai.plan = 'idle';
+      }
+      return input;
+    }
+
+    function step() {
+      if (!busy(me)) me.facing = cpu.x > me.x ? 1 : -1;
+      if (!busy(cpu)) cpu.facing = me.x > cpu.x ? 1 : -1;
+      control(me, keys);
+      control(cpu, think());
+      // 펀치·킥 키는 한 번 누를 때 한 번만 나간다
+      keys.punch = keys.kick = false;
+      physics(me);
+      physics(cpu);
+      // 서로 겹치지 않게 민다
+      const gap = cpu.x - me.x;
+      if (Math.abs(gap) < 50 && Math.abs(me.y - cpu.y) < 100) {
+        const push = (50 - Math.abs(gap)) / 2 * Math.sign(gap || 1);
+        me.x -= push;
+        cpu.x += push;
+      }
+      attack(me, cpu);
+      attack(cpu, me);
+      effects.forEach(e => { e.t--; e.y -= 1; });
+      effects = effects.filter(e => e.t > 0);
+      timeLeft -= 1 / 60;
+      if (me.hp <= 0 || cpu.hp <= 0 || timeLeft <= 0) finish();
+    }
+
+    function finish() {
+      running = false;
+      let title, msg;
+      if (cpu.hp <= 0) { title = 'K.O.!'; msg = '현우가 드디어 일어났습니다. "안 잤다니까?"'; }
+      else if (me.hp <= 0) { title = 'YOU LOSE'; msg = '현우의 잠버릇에 당했습니다...'; }
+      else if (me.hp > cpu.hp) { title = 'TIME OVER - 승리'; msg = '판정승! 현우는 다시 잠들었습니다 😴'; }
+      else if (me.hp < cpu.hp) { title = 'TIME OVER - 패배'; msg = '판정패... 현우가 더 쌩쌩했습니다'; }
+      else { title = 'DRAW'; msg = '무승부. 둘 다 피곤합니다'; }
+      draw();
+      titleEl.textContent = title;
+      msgEl.textContent = msg;
+      startBtn.textContent = '다시 하기';
+      overlay.hidden = false;
+    }
+
+    // ---- 그리기 ----
+    function drawFighter(f, isHyunwoo) {
+      const { x, y, facing } = f;
+      const m = f.move && MOVES[f.move];
+      const extending = m && f.frame > m.startup && f.frame <= m.startup + m.active + 3;
+      const lean = f.hurt > 0 ? -facing * 8 : 0;
+      const legSwing = onGround(f) ? Math.sin(f.walk) * 14 : 10;
+
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = f.hurt > 0 && f.hurt % 4 < 2 ? '#fff' : f.color;
+      ctx.lineWidth = 12;
+
+      const hipY = y - 50, neckY = y - 112, headY = y - 140;
+      ctx.beginPath();
+      // 다리
+      ctx.moveTo(x, hipY); ctx.lineTo(x - 12 + legSwing, y);
+      if (f.move === 'kick' && extending) {
+        ctx.moveTo(x, hipY); ctx.lineTo(x + facing * 78, hipY - 8);
+      } else {
+        ctx.moveTo(x, hipY); ctx.lineTo(x + 12 - legSwing, y);
+      }
+      // 몸통
+      ctx.moveTo(x, hipY); ctx.lineTo(x + lean, neckY);
+      // 팔
+      const shoulderX = x + lean, shoulderY = neckY + 10;
+      if (f.guard) {
+        ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(shoulderX + facing * 22, shoulderY - 26);
+        ctx.moveTo(shoulderX, shoulderY + 6); ctx.lineTo(shoulderX + facing * 26, shoulderY - 14);
+      } else if (f.move === 'punch' && extending) {
+        ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(shoulderX + facing * 64, shoulderY);
+        ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(shoulderX + facing * 14, shoulderY + 26);
+      } else {
+        ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(shoulderX + facing * 26, shoulderY + 18);
+        ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(shoulderX + facing * 10, shoulderY + 34);
+      }
+      ctx.stroke();
+
+      // 머리
+      const hx = x + lean, r = 30;
+      ctx.beginPath();
+      ctx.arc(hx, headY, r, 0, Math.PI * 2);
+      if (isHyunwoo && face.complete && face.naturalWidth) {
+        ctx.save();
+        ctx.clip();
+        ctx.translate(hx, headY);
+        if (facing < 0) ctx.scale(-1, 1);
+        ctx.drawImage(face, FACE_CROP.x, FACE_CROP.y, FACE_CROP.size, FACE_CROP.size, -r, -r, r * 2, r * 2);
+        ctx.restore();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = f.color;
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#f3d2b3';
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = f.color;
+        ctx.stroke();
+        ctx.font = '28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(f.hp < 30 ? '😵' : '😠', hx, headY + 1);
+      }
+
+      if (f.sleep > 0) {
+        ctx.fillStyle = '#fff';
+        ctx.font = '900 22px "Noto Sans KR", sans-serif';
+        ctx.textAlign = 'left';
+        const bob = Math.sin(f.sleep / 8) * 4;
+        ctx.fillText('Z', hx + 30, headY - 34 + bob);
+        ctx.fillText('z', hx + 46, headY - 52 - bob);
+        ctx.fillText('z', hx + 58, headY - 66 + bob);
+      }
+      ctx.restore();
+    }
+
+    function drawHp(f, x, align, name) {
+      const w = 300, h = 20, y = 18;
+      const left = align === 'left' ? x : x - w;
+      ctx.fillStyle = '#000';
+      ctx.fillRect(left - 3, y - 3, w + 6, h + 6);
+      ctx.fillStyle = '#7a1d1d';
+      ctx.fillRect(left, y, w, h);
+      const shown = w * f.shownHp / 100, real = w * f.hp / 100;
+      ctx.fillStyle = '#ffd23f';
+      ctx.fillRect(align === 'left' ? left : left + w - shown, y, shown, h);
+      ctx.fillStyle = f.hp > 30 ? '#3ddc84' : '#ff4d4d';
+      ctx.fillRect(align === 'left' ? left : left + w - real, y, real, h);
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 16px "Noto Sans KR", sans-serif';
+      ctx.textAlign = align;
+      ctx.fillText(name, x, y + h + 22);
+    }
+
+    function draw() {
+      // 배경: 현우가 자던 그 바닥
+      ctx.fillStyle = '#3a332d';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#d8d0bd';
+      ctx.fillRect(0, FLOOR, W, H - FLOOR);
+      ctx.fillStyle = '#c7bea9';
+      for (let i = 0; i < 40; i++) ctx.fillRect((i * 97) % W, FLOOR + 8 + (i * 37) % (H - FLOOR - 12), 3, 3);
+      ctx.fillStyle = '#7b7f87';
+      ctx.fillRect(W - 170, FLOOR - 14, 120, 18);
+
+      drawFighter(me, false);
+      drawFighter(cpu, true);
+
+      drawHp(me, 24, 'left', '나');
+      drawHp(cpu, W - 24, 'right', '정현우');
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '900 34px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(Math.max(0, Math.ceil(timeLeft)), W / 2, 44);
+
+      effects.forEach(e => {
+        ctx.globalAlpha = Math.min(1, e.t / 8);
+        ctx.fillStyle = e.big ? '#ffd23f' : '#fff';
+        ctx.font = `900 ${e.big ? 34 : 24}px "Black Han Sans", sans-serif`;
+        ctx.fillText(e.text, e.x, e.y);
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    // 고정 60fps 로 계산하고, 탭이 숨겨지면 멈춘다
+    function loop(t) {
+      rafId = requestAnimationFrame(loop);
+      if (panel.hidden || document.hidden) { last = t; return; }
+      acc += Math.min(100, t - last);
+      last = t;
+      while (running && acc >= 1000 / 60) {
+        step();
+        acc -= 1000 / 60;
+      }
+      if (!running) acc = 0;
+      draw();
+    }
+
+    function start() {
+      reset();
+      Object.keys(keys).forEach(k => { keys[k] = false; });
+      overlay.hidden = true;
+      running = true;
+      canvas.focus();
+    }
+
+    // ---- 입력 ----
+    window.addEventListener('keydown', e => {
+      if (panel.hidden || !running) return;
+      const k = KEYMAP[e.key.toLowerCase()];
+      if (!k) return;
+      e.preventDefault();
+      if ((k === 'punch' || k === 'kick') && e.repeat) return;
+      keys[k] = true;
+    });
+    window.addEventListener('keyup', e => {
+      const k = KEYMAP[e.key.toLowerCase()];
+      if (k && k !== 'punch' && k !== 'kick') keys[k] = false;
+    });
+
+    document.querySelectorAll('#pad button').forEach(btn => {
+      const k = btn.dataset.key;
+      const down = e => { e.preventDefault(); if (running) keys[k] = true; btn.classList.add('held'); };
+      const up = () => { if (k !== 'punch' && k !== 'kick') keys[k] = false; btn.classList.remove('held'); };
+      btn.addEventListener('pointerdown', down);
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => btn.addEventListener(t, up));
+      btn.addEventListener('contextmenu', e => e.preventDefault());
+    });
+
+    startBtn.addEventListener('click', start);
+
+    reset();
+    face.onload = draw;
+    rafId = requestAnimationFrame(loop);
+  })();
+</script>
+<script>
+  // 두더지잡기: 자는 현우를 깨운다
+  (() => {
+    const panel = document.getElementById('panel-mole');
+    const board = document.getElementById('mole-board');
+    const overlay = document.getElementById('mole-overlay');
+    const titleEl = document.getElementById('mole-title');
+    const msgEl = document.getElementById('mole-msg');
+    const startBtn = document.getElementById('mole-start');
+    const scoreEl = document.getElementById('mole-score');
+    const timeEl = document.getElementById('mole-time');
+    const comboEl = document.getElementById('mole-combo');
+    const bestEl = document.getElementById('mole-best');
+
+    const ROUND = 30, BEST_KEY = 'babo-mole-best';
+    const KINDS = {
+      sleep1: { score: 10, text: '기상!', tag: '', cls: 'good' },
+      sleep2: { score: 10, text: '기상!', tag: '', cls: 'good' },
+      awake:  { score: 25, text: '포착!', tag: '깨어있음', cls: 'gold', stay: 0.6 },
+      alarm:  { score: 0,  text: '+3초', tag: '알람', cls: 'gold', emoji: '⏰', time: 3 },
+      boss:   { score: -30, text: '헉 팀장님!', tag: '팀장님', cls: '', emoji: '👔', bad: true },
+    };
+
+    const holes = [];
+    for (let i = 0; i < 9; i++) {
+      const hole = document.createElement('div');
+      hole.className = 'hole';
+      hole.innerHTML = '<div class="mole-clip"><div class="mole"></div></div><span class="mole-tag"></span>';
+      board.appendChild(hole);
+      holes.push({ el: hole, mole: hole.querySelector('.mole'), tag: hole.lastChild, kind: null, until: 0, hit: false });
+    }
+
+    let best = 0;
+    try { best = +localStorage.getItem(BEST_KEY) || 0; } catch (e) {}
+    bestEl.textContent = best;
+
+    let running = false, score = 0, combo = 0, timeLeft = ROUND, elapsed = 0;
+    let nextSpawn = 0, last = 0, hits = 0, bossHits = 0;
+
+    const mult = () => Math.min(5, 1 + Math.floor(combo / 5));
+
+    function pickKind() {
+      const r = Math.random();
+      if (r < 0.10) return 'boss';
+      if (r < 0.15) return 'alarm';
+      if (r < 0.33) return 'awake';
+      return r < 0.66 ? 'sleep1' : 'sleep2';
+    }
+
+    function spawn() {
+      const free = holes.filter(h => !h.kind);
+      if (!free.length) return;
+      const h = free[Math.floor(Math.random() * free.length)];
+      const kind = pickKind(), k = KINDS[kind];
+      // 시간이 갈수록 빨리 숨는다
+      const stay = (1.15 - 0.55 * (elapsed / ROUND)) * (k.stay || 1);
+      h.kind = kind;
+      h.hit = false;
+      h.until = elapsed + stay;
+      h.mole.className = 'mole ' + kind;
+      h.mole.textContent = k.emoji || '';
+      h.tag.textContent = k.tag;
+      h.el.classList.remove('hit');
+      h.el.classList.add('up');
+    }
+
+    function hide(h) {
+      h.kind = null;
+      h.el.classList.remove('up', 'hit');
+    }
+
+    function popText(x, y, text, cls) {
+      const el = document.createElement('div');
+      el.className = 'pop ' + (cls || '');
+      el.textContent = text;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      board.appendChild(el);
+      setTimeout(() => el.remove(), 700);
+    }
+
+    function swing(x, y) {
+      const el = document.createElement('div');
+      el.className = 'hammer';
+      el.textContent = '🔨';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      board.appendChild(el);
+      setTimeout(() => el.remove(), 220);
+    }
+
+    function render() {
+      scoreEl.textContent = score;
+      timeEl.textContent = Math.max(0, Math.ceil(timeLeft));
+      comboEl.textContent = 'x' + mult();
+    }
+
+    board.addEventListener('pointerdown', e => {
+      if (!running) return;
+      const rect = board.getBoundingClientRect();
+      const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      swing(x, y);
+      const hole = e.target.closest('.hole');
+      const h = hole && holes.find(o => o.el === hole);
+      if (!h || !h.kind || h.hit) {
+        combo = 0;
+        popText(x, y, '헛스윙', '');
+        return render();
+      }
+      const k = KINDS[h.kind];
+      h.hit = true;
+      h.until = elapsed + 0.25;
+      h.el.classList.add('hit');
+      if (k.bad) {
+        combo = 0;
+        score = Math.max(0, score + k.score);
+        bossHits++;
+        board.classList.remove('shake');
+        void board.offsetWidth;
+        board.classList.add('shake');
+        popText(x, y, `${k.text} ${k.score}`, k.cls);
+      } else if (k.time) {
+        timeLeft += k.time;
+        popText(x, y, k.text, k.cls);
+      } else {
+        combo++;
+        hits++;
+        const gain = k.score * mult();
+        score += gain;
+        popText(x, y, `${k.text} +${gain}`, k.cls);
+      }
+      render();
+    });
+
+    function finish() {
+      running = false;
+      holes.forEach(hide);
+      const newBest = score > best;
+      if (newBest) {
+        best = score;
+        try { localStorage.setItem(BEST_KEY, best); } catch (e) {}
+        bestEl.textContent = best;
+      }
+      let msg;
+      if (score >= 600) msg = '현우가 완전히 일어났습니다. 오늘은 출근 성공!';
+      else if (score >= 300) msg = '현우가 반쯤 깼습니다. "5분만 더..."';
+      else msg = '현우는 여전히 자고 있습니다 😴';
+      titleEl.textContent = newBest ? `신기록! ${score}점` : `${score}점`;
+      msgEl.innerHTML = `${msg}<br>깨운 횟수 ${hits}회 · 팀장님 때린 횟수 ${bossHits}회`;
+      startBtn.textContent = '다시 하기';
+      overlay.hidden = false;
+    }
+
+    function loop(t) {
+      requestAnimationFrame(loop);
+      const dt = Math.min(0.1, (t - last) / 1000);
+      last = t;
+      if (!running || panel.hidden || document.hidden) return;
+      elapsed += dt;
+      timeLeft -= dt;
+      if (timeLeft <= 0) { timeLeft = 0; render(); return finish(); }
+      holes.forEach(h => {
+        if (h.kind && elapsed >= h.until) hide(h);
+      });
+      if (elapsed >= nextSpawn) {
+        spawn();
+        // 등장 간격도 점점 짧아진다
+        nextSpawn = elapsed + 0.85 - 0.45 * (elapsed / ROUND) + Math.random() * 0.2;
+        if (elapsed > ROUND / 2 && Math.random() < 0.35) spawn();
+      }
+      render();
+    }
+
+    startBtn.addEventListener('click', () => {
+      score = combo = hits = bossHits = 0;
+      elapsed = 0;
+      nextSpawn = 0.3;
+      timeLeft = ROUND;
+      holes.forEach(hide);
+      overlay.hidden = true;
+      running = true;
+      render();
+    });
+
+    requestAnimationFrame(t => { last = t; loop(t); });
+  })();
 </script>
 </body>
 </html>
